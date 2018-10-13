@@ -1,0 +1,23 @@
+{
+  "name": "dynamodb-cookie-store",
+  "description": "AWS DynamoDB Tough-Cookie Store Implement",
+  "version": "0.1.0",
+  "author": "Duc Lv",
+  "main": "index.js",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/duclvz/dynamodb-cookie-store/issues",
+    "email": "duclvzz@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/duclvz/dynamodb-cookie-store.git"
+  },
+  "homepage": "https://github.com/duclvz/dynamodb-cookie-store",
+  "dependencies": {
+    "aws-sdk": "^2.329.0",
+    "tough-cookie": "^2.4.3"
+  },
+  "devDependencies": {
+  }
+}
