@@ -50,7 +50,7 @@ DynamoDBCookieStore.prototype._get = function (cb) {
   }, function (err, data) {
     if (err && err.statusCode == 400)
       throw new Error('Please create table "' + this.tableName + '" in DynamoDB to use this package!')
-    if (!data.Item)
+    if (!data || !data.Item)
       return cb(err, data)
     for (var domainName in data.Item.cookie) {
       for (var pathName in data.Item.cookie[domainName]) {
