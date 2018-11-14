@@ -9,7 +9,7 @@ var AWS = require('aws-sdk');
 function DynamoDBCookieStore(email, DynamoDBClient, cb, tableName = 'cookie') {
   if (!(DynamoDBClient instanceof AWS.DynamoDB.DocumentClient))
     throw new Error('Invalid DynamoDB DocumentClient')
-  if (!tableName || tableName.length < 3 || tableName.length > 255 || !/^[A-Za-z0-9_.\-]+$/.match(tableName)) {
+  if (!tableName || tableName.length < 3 || tableName.length > 255 || !/^[A-Za-z0-9_.\-]+$/.test(tableName)) {
     throw new Error('Invalid tableName; must be 3-255 chars of A-Z, a-z, 0-9, _, -, or . only')
   }
   Store.call(this);
