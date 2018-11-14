@@ -6,7 +6,7 @@ var permutePath = tough.permutePath;
 var util = require('util');
 var AWS = require('aws-sdk');
 
-function DynamoDBCookieStore(email, DynamoDBClient, tableName = 'cookie') {
+function DynamoDBCookieStore(email, DynamoDBClient, cb, tableName = 'cookie') {
   if (!(DynamoDBClient instanceof AWS.DynamoDB.DocumentClient))
     throw new Error('Invalid DynamoDB DocumentClient')
   if (!tableName || tableName.length < 3 || tableName.length > 255 || !/^[A-Za-z0-9_.\-]+$/.match(tableName)) {
@@ -20,6 +20,7 @@ function DynamoDBCookieStore(email, DynamoDBClient, tableName = 'cookie') {
   const self = this;
   this._get(function (err, data) {
     if (!err && data.Item) self.idx = data.Item.cookie || {};
+    cb && cb(err, self);
   });
 }
 
