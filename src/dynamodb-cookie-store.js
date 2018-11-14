@@ -92,7 +92,7 @@ DynamoDBCookieStore.prototype._put = function (cookie, cb) {
     Item: {
       email: self.email,
       cookie: cookieJSON,
-      ttl: maxTtl
+      ttl: maxTtl ? Math.floor(maxTtl / 1000) : null // Amazon wants epoch-seconds, not milliseconds
     }
   }, cb);
 }
