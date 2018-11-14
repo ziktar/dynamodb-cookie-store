@@ -62,14 +62,37 @@ DynamoDBCookieStore.prototype._get = function (cb) {
   });
 }
 
+DynamoDBCookieStore.prototype.findMaxTtl = function (cookie) {
+  var maxTtl = null;
+  for (var domain in cookie) {
+    for (var path in cookie[domain]) {
+      for (var key in cookie[domain][path]) {
+        var expiration = cookie[domain][path][key].expiryTime();
+        if (expiration == Infinity) {
+          // a cookie that never expires, so store null in the ttl field
+          return null;
+        }
+
+        if (expiration > maxTtl) {
+          maxTtl = expiration;
+        }
+      }
+    }
+  }
+  return maxTtl;
+}
+
 DynamoDBCookieStore.prototype._put = function (cookie, cb) {
   const self = this;
+  var maxTtl = this.findMaxTtl(cookie);
+  
   var cookieJSON = JSON.parse(JSON.stringify(cookie));
   self.DynamoDBClient.put({
     TableName: this.tableName,
     Item: {
       email: self.email,
-      cookie: cookieJSON
+      cookie: cookieJSON,
+      ttl: maxTtl
     }
   }, cb);
 }
