@@ -43,13 +43,13 @@ if (util.inspect.custom) {
 DynamoDBCookieStore.prototype._get = function (cb) {
   const self = this;
   self.DynamoDBClient.get({
-    TableName: this.tableName,
+    TableName: self.tableName,
     Key: {
       email: self.email
     }
   }, function (err, data) {
     if (err && err.statusCode == 400)
-      throw new Error('Please create table "' + this.tableName + '" in DynamoDB to use this package!')
+      throw new Error('Please create table "' + self.tableName + '" in DynamoDB to use this package!')
     if (!data || !data.Item)
       return cb(err, data)
     for (var domainName in data.Item.cookie) {
@@ -89,7 +89,7 @@ DynamoDBCookieStore.prototype._put = function (cookie, cb) {
   
   var cookieJSON = JSON.parse(JSON.stringify(cookie));
   self.DynamoDBClient.put({
-    TableName: this.tableName,
+    TableName: self.tableName,
     Item: {
       email: self.email,
       cookie: cookieJSON,
