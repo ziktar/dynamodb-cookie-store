@@ -6,10 +6,17 @@ var permutePath = tough.permutePath;
 var util = require('util');
 var AWS = require('aws-sdk');
 
-function DynamoDBCookieStore(email, DynamoDBClient, cb, tableName = 'cookie') {
+function DynamoDBCookieStore(email, DynamoDBClient, tableName, cb) {
   if (!(DynamoDBClient instanceof AWS.DynamoDB.DocumentClient))
     throw new Error('Invalid DynamoDB DocumentClient')
-  if (!tableName || tableName.length < 3 || tableName.length > 255 || !/^[A-Za-z0-9_.\-]+$/.test(tableName)) {
+  if (typeof tableName == 'function' && !cb) {
+    cb = tableName; 
+    tableName = null;
+  }
+  if (!tableName) {
+    tableName = 'cookie';
+  }
+  else if (tableName.length < 3 || tableName.length > 255 || !/^[A-Za-z0-9_.\-]+$/.test(tableName)) {
     throw new Error('Invalid tableName; must be 3-255 chars of A-Z, a-z, 0-9, _, -, or . only')
   }
   Store.call(this);
@@ -19,7 +26,7 @@ function DynamoDBCookieStore(email, DynamoDBClient, cb, tableName = 'cookie') {
   this.tableName = tableName;
   const self = this;
   this._get(function (err, data) {
-    if (!err && data.Item) self.idx = data.Item.cookie || {};
+    if (!err && data && data.Item) self.idx = data.Item.cookie || {};
     cb && cb(err, self);
   });
 }
@@ -70,8 +77,9 @@ DynamoDBCookieStore.prototype.findMaxTtl = function (cookie) {
       for (var key in cookie[domain][path]) {
         var expiration = cookie[domain][path][key].expiryTime();
         if (expiration == Infinity) {
-          // a cookie that never expires, so store null in the ttl field
-          return null;
+          // a cookie without expiration is a session cookie, so it should not count
+          // towards the maxTTL
+          continue;
         }
 
         if (expiration > maxTtl) {
